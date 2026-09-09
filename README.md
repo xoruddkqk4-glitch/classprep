@@ -20,9 +20,16 @@ Google Apps Script(GAS) 및 구글 스프레드시트 기반의 학급/요일별
 
 ---
 
-## [2026-09-09 20:20] 업데이트 이력 (Commit ID: 1471034)
+## [2026-09-09 20:20] 업데이트 이력 (Commit ID: 7647220)
 - **수정 내용**:
   - `.agents` 규정 및 커밋 워크플로우 적용
   - `index.html` 프론트엔드 UI 복구 및 반응형 웹 디자인 개선 (날짜 피커, 준비물 카드 grid, 배지 상태 표시)
   - Git 저장소 초기화 및 Remote URL (`https://github.com/xoruddkqk4-glitch/classprep`) 연동
 - **검증 결과**: `Code.gs` 백엔드 로직 검증 및 `index.html` 구문 및 스크립트 바인딩 확인 완료
+
+## [2026-09-09 20:23] 업데이트 이력 (Commit ID: 9f7cead)
+- **수정 내용**:
+  - `Code.gs`: Apps Script 내 HTML 파일명 대소문자(`index`/`Index`/`index.html`) 유연 처리 및 예외 핸들링 추가
+  - `index.html`: 프론트엔드 HTML/CSS/JS 코드 정상 반영
+- **검증 결과**: Apps Script `createHtmlOutputFromFile` 파일 매칭 예외 해결 확인
+

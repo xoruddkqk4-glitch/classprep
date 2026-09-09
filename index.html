@@ -1,40 +1,476 @@
-function doGet() {
-return HtmlService.createHtmlOutputFromFile('Index')
-.setTitle('세문영 준비물 안내')
-.setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
-.addMetaTag('viewport', 'width=device-width, initial-scale=1');
-}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>세문영 수업 준비물 안내</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-sub: #64748b;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --primary-light: #eff6ff;
+      --accent-check: #10b981;
+      --accent-check-bg: #d1fae5;
+      --accent-none: #94a3b8;
+      --accent-none-bg: #f1f5f9;
+      --border-color: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --radius: 16px;
+    }
 
-function getClassData(targetDateStr) {
-var ss = SpreadsheetApp.getActiveSpreadsheet();
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    }
 
-if (!targetDateStr) {
-targetDateStr = Utilities.formatDate(new Date(), "Asia/Seoul", "yyyy-MM-dd");
-}
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 24px 16px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
 
-var parts = targetDateStr.split('-');
-var targetDate = new Date(parts[0], parts[1] - 1, parts[2]);
-var dayIndex = targetDate.getDay();
-var fullDays = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
-var targetFullDay = fullDays[dayIndex];
+    .container {
+      width: 100%;
+      max-width: 680px;
+      margin: 0 auto;
+    }
 
-// 1. WeeklyTemplate에서 해당 요일의 시간표 뼈대(요일, 학급, 교시) 가져오기
-var templateSheet = ss.getSheetByName('WeeklyTemplate');
-var tData = templateSheet.getDataRange().getValues();
-var targetClasses = [];
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
 
-// 컬럼: 요일(0), 학급(1), 교시(2)
-for (var i = 1; i < tData.length; i++) { var rowDay=String(tData[i][0]).trim(); if (rowDay===targetFullDay) {
-    targetClasses.push({ className: tData[i][1], // 세문영A, D, E period: tData[i][2], // 교시 portfolio: "-" , // 기본값
-    pen: "-" , // 기본값 dibot: "-" , // 기본값 textbook: "-" , // 기본값 etc: "-" // 기본값 }); } } // 2. DailyNotes에서 해당 날짜의 세부
-    준비물 정보 가져오기 var notesSheet=ss.getSheetByName('DailyNotes'); if (notesSheet && notesSheet.getLastRow()> 1) {
-    var nData = notesSheet.getDataRange().getValues();
-    // 컬럼: 날짜(0), 학급(1), 포트폴리오(2), 필기도구(3), 디벗(4), 교과서(5), 기타(6)
-    for (var j = 1; j < nData.length; j++) { var nDateStr="" ; if (nData[j][0] instanceof Date) {
-        nDateStr=Utilities.formatDate(nData[j][0], "Asia/Seoul" , "yyyy-MM-dd" ); } else {
-        nDateStr=String(nData[j][0]).trim(); } if (nDateStr===targetDateStr) { var nClass=String(nData[j][1]).trim();
-        for (var k=0; k < targetClasses.length; k++) { if (targetClasses[k].className===nClass) {
-        targetClasses[k].portfolio=nData[j][2] || "-" ; targetClasses[k].pen=nData[j][3] || "-" ;
-        targetClasses[k].dibot=nData[j][4] || "-" ; targetClasses[k].textbook=nData[j][5] || "-" ;
-        targetClasses[k].etc=nData[j][6] || "-" ; } } } } } return { dateStr: targetDateStr, dayOfWeek: targetFullDay,
-        classes: targetClasses }; }
+    .title-badge {
+      display: inline-block;
+      padding: 6px 14px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.5px;
+    }
+
+    /* Date Controller */
+    .date-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-color);
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .date-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .btn {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn:hover {
+      background: var(--bg-color);
+      border-color: #cbd5e1;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .date-picker-wrapper {
+      position: relative;
+      flex: 1;
+      text-align: center;
+    }
+
+    .date-input {
+      font-size: 16px;
+      font-weight: 700;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 8px 12px;
+      text-align: center;
+      color: var(--text-main);
+      outline: none;
+      width: 100%;
+      max-width: 180px;
+      cursor: pointer;
+    }
+
+    .date-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    .day-info {
+      text-align: center;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    /* Class Cards */
+    .class-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .class-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-color);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .class-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+    }
+
+    .class-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 14px;
+      border-bottom: 1px dashed var(--border-color);
+      margin-bottom: 16px;
+    }
+
+    .class-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .period-badge {
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 8px;
+    }
+
+    .prep-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+    }
+
+    .prep-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: #f8fafc;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #f1f5f9;
+    }
+
+    .prep-label {
+      font-size: 12px;
+      color: var(--text-sub);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .prep-val {
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+    }
+
+    .badge-check {
+      color: var(--accent-check);
+      background: var(--accent-check-bg);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    .badge-none {
+      color: var(--accent-none);
+      background: var(--accent-none-bg);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    .badge-text {
+      color: #0284c7;
+      background: #e0f2fe;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    /* Loading & Empty State */
+    .state-box {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 40px 20px;
+      text-align: center;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow);
+      color: var(--text-sub);
+    }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--border-color);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .empty-icon {
+      font-size: 36px;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <span class="title-badge">스마트 알림장</span>
+      <h1>🎒 세문영 준비물 안내</h1>
+    </header>
+
+    <div class="date-card">
+      <div class="date-controls">
+        <button class="btn" id="prevDayBtn">◀ 이전</button>
+        <div class="date-picker-wrapper">
+          <input type="date" id="datePicker" class="date-input">
+        </div>
+        <button class="btn" id="todayBtn">오늘</button>
+        <button class="btn" id="nextDayBtn">다음 ▶</button>
+      </div>
+      <div class="day-info" id="dayInfo">조회 중...</div>
+    </div>
+
+    <div id="contentArea">
+      <div class="state-box">
+        <div class="spinner"></div>
+        <p>준비물 정보를 불러오는 중입니다...</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentDateStr = getTodayStr();
+
+    function getTodayStr() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const datePicker = document.getElementById('datePicker');
+      datePicker.value = currentDateStr;
+
+      datePicker.addEventListener('change', (e) => {
+        if (e.target.value) {
+          currentDateStr = e.target.value;
+          loadData(currentDateStr);
+        }
+      });
+
+      document.getElementById('prevDayBtn').addEventListener('click', () => changeDate(-1));
+      document.getElementById('nextDayBtn').addEventListener('click', () => changeDate(1));
+      document.getElementById('todayBtn').addEventListener('click', () => {
+        currentDateStr = getTodayStr();
+        datePicker.value = currentDateStr;
+        loadData(currentDateStr);
+      });
+
+      loadData(currentDateStr);
+    });
+
+    function changeDate(days) {
+      const date = new Date(currentDateStr);
+      date.setDate(date.getDate() + days);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      currentDateStr = `${year}-${month}-${day}`;
+      document.getElementById('datePicker').value = currentDateStr;
+      loadData(currentDateStr);
+    }
+
+    function loadData(dateStr) {
+      showLoading();
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(renderData)
+          .withFailureHandler(handleError)
+          .getClassData(dateStr);
+      } else {
+        // Dev / Fallback Preview
+        setTimeout(() => {
+          renderData({
+            dateStr: dateStr,
+            dayOfWeek: getDayName(dateStr),
+            classes: [
+              { className: '세문영A', period: '1교시', portfolio: 'O', pen: 'O', dibot: '-', textbook: 'O', etc: '-' },
+              { className: '세문영D', period: '3교시', portfolio: '-', pen: 'O', dibot: 'O', textbook: 'O', etc: '유인물' }
+            ]
+          });
+        }, 400);
+      }
+    }
+
+    function getDayName(dateStr) {
+      const parts = dateStr.split('-');
+      const d = new Date(parts[0], parts[1] - 1, parts[2]);
+      const days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+      return days[d.getDay()];
+    }
+
+    function showLoading() {
+      document.getElementById('dayInfo').textContent = '데이터를 조회하고 있습니다...';
+      document.getElementById('contentArea').innerHTML = `
+        <div class="state-box">
+          <div class="spinner"></div>
+          <p>준비물 정보를 불러오는 중입니다...</p>
+        </div>
+      `;
+    }
+
+    function handleError(err) {
+      document.getElementById('dayInfo').textContent = '오류 발생';
+      document.getElementById('contentArea').innerHTML = `
+        <div class="state-box">
+          <div class="empty-icon">⚠️</div>
+          <p>데이터를 불러오는 중 오류가 발생했습니다.<br>${err.message || err}</p>
+        </div>
+      `;
+    }
+
+    function renderBadge(val) {
+      if (val === 'O') {
+        return `<span class="badge-check">O (지참)</span>`;
+      } else if (val === '-' || !val) {
+        return `<span class="badge-none">- (없음)</span>`;
+      } else {
+        return `<span class="badge-text">${val}</span>`;
+      }
+    }
+
+    function renderData(data) {
+      const dayInfo = document.getElementById('dayInfo');
+      dayInfo.textContent = `${data.dateStr} (${data.dayOfWeek})`;
+
+      const container = document.getElementById('contentArea');
+      if (!data.classes || data.classes.length === 0) {
+        container.innerHTML = `
+          <div class="state-box">
+            <div class="empty-icon">📅</div>
+            <p>해당 날짜에는 등록된 수업 및 준비물 일정이 없습니다.</p>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '<div class="class-list">';
+      data.classes.forEach(c => {
+        html += `
+          <div class="class-card">
+            <div class="class-header">
+              <div class="class-title">
+                📚 ${c.className}
+              </div>
+              <span class="period-badge">${c.period}</span>
+            </div>
+            <div class="prep-grid">
+              <div class="prep-item">
+                <span class="prep-label">📁 포트폴리오</span>
+                <div class="prep-val">${renderBadge(c.portfolio)}</div>
+              </div>
+              <div class="prep-item">
+                <span class="prep-label">✏️ 필기도구</span>
+                <div class="prep-val">${renderBadge(c.pen)}</div>
+              </div>
+              <div class="prep-item">
+                <span class="prep-label">💻 디벗</span>
+                <div class="prep-val">${renderBadge(c.dibot)}</div>
+              </div>
+              <div class="prep-item">
+                <span class="prep-label">📖 교과서</span>
+                <div class="prep-val">${renderBadge(c.textbook)}</div>
+              </div>
+              <div class="prep-item">
+                <span class="prep-label">📌 기타 준비물</span>
+                <div class="prep-val">${renderBadge(c.etc)}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      html += '</div>';
+      container.innerHTML = html;
+    }
+  </script>
+</body>
+</html>

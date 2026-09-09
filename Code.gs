@@ -1,5 +1,15 @@
 function doGet() {
-  return HtmlService.createHtmlOutputFromFile('Index')
+  var htmlOutput;
+  try {
+    htmlOutput = HtmlService.createHtmlOutputFromFile('index');
+  } catch (e) {
+    try {
+      htmlOutput = HtmlService.createHtmlOutputFromFile('Index');
+    } catch (e2) {
+      htmlOutput = HtmlService.createHtmlOutputFromFile('index.html');
+    }
+  }
+  return htmlOutput
       .setTitle('세문영 준비물 안내')
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
       .addMetaTag('viewport', 'width=device-width, initial-scale=1');
@@ -31,22 +41,24 @@ function getClassData(targetDateStr) {
 
   // 1. WeeklyTemplate에서 해당 요일의 시간표 뼈대(요일, 학급, 교시) 가져오기
   var templateSheet = ss.getSheetByName('WeeklyTemplate');
-  var tData = templateSheet.getDataRange().getValues();
   var targetClasses = [];
   
-  // 컬럼: 요일(0), 학급(1), 교시(2)
-  for (var i = 1; i < tData.length; i++) {
-    var rowDay = String(tData[i][0]).trim();
-    if (rowDay === targetFullDay) {
-      targetClasses.push({
-        className: tData[i][1],  // 세문영A, D, E
-        period: tData[i][2],     // 교시
-        portfolio: "-",          
-        pen: "-",                
-        dibot: "-",              
-        textbook: "-",           
-        etc: "-"                 
-      });
+  if (templateSheet) {
+    var tData = templateSheet.getDataRange().getValues();
+    // 컬럼: 요일(0), 학급(1), 교시(2)
+    for (var i = 1; i < tData.length; i++) {
+      var rowDay = String(tData[i][0]).trim();
+      if (rowDay === targetFullDay) {
+        targetClasses.push({
+          className: tData[i][1],  // 세문영A, D, E
+          period: tData[i][2],     // 교시
+          portfolio: "-",          
+          pen: "-",                
+          dibot: "-",              
+          textbook: "-",           
+          etc: "-"                 
+        });
+      }
     }
   }
   
