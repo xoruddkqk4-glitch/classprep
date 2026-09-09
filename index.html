@@ -1,0 +1,40 @@
+function doGet() {
+return HtmlService.createHtmlOutputFromFile('Index')
+.setTitle('세문영 준비물 안내')
+.setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
+.addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
+
+function getClassData(targetDateStr) {
+var ss = SpreadsheetApp.getActiveSpreadsheet();
+
+if (!targetDateStr) {
+targetDateStr = Utilities.formatDate(new Date(), "Asia/Seoul", "yyyy-MM-dd");
+}
+
+var parts = targetDateStr.split('-');
+var targetDate = new Date(parts[0], parts[1] - 1, parts[2]);
+var dayIndex = targetDate.getDay();
+var fullDays = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+var targetFullDay = fullDays[dayIndex];
+
+// 1. WeeklyTemplate에서 해당 요일의 시간표 뼈대(요일, 학급, 교시) 가져오기
+var templateSheet = ss.getSheetByName('WeeklyTemplate');
+var tData = templateSheet.getDataRange().getValues();
+var targetClasses = [];
+
+// 컬럼: 요일(0), 학급(1), 교시(2)
+for (var i = 1; i < tData.length; i++) { var rowDay=String(tData[i][0]).trim(); if (rowDay===targetFullDay) {
+    targetClasses.push({ className: tData[i][1], // 세문영A, D, E period: tData[i][2], // 교시 portfolio: "-" , // 기본값
+    pen: "-" , // 기본값 dibot: "-" , // 기본값 textbook: "-" , // 기본값 etc: "-" // 기본값 }); } } // 2. DailyNotes에서 해당 날짜의 세부
+    준비물 정보 가져오기 var notesSheet=ss.getSheetByName('DailyNotes'); if (notesSheet && notesSheet.getLastRow()> 1) {
+    var nData = notesSheet.getDataRange().getValues();
+    // 컬럼: 날짜(0), 학급(1), 포트폴리오(2), 필기도구(3), 디벗(4), 교과서(5), 기타(6)
+    for (var j = 1; j < nData.length; j++) { var nDateStr="" ; if (nData[j][0] instanceof Date) {
+        nDateStr=Utilities.formatDate(nData[j][0], "Asia/Seoul" , "yyyy-MM-dd" ); } else {
+        nDateStr=String(nData[j][0]).trim(); } if (nDateStr===targetDateStr) { var nClass=String(nData[j][1]).trim();
+        for (var k=0; k < targetClasses.length; k++) { if (targetClasses[k].className===nClass) {
+        targetClasses[k].portfolio=nData[j][2] || "-" ; targetClasses[k].pen=nData[j][3] || "-" ;
+        targetClasses[k].dibot=nData[j][4] || "-" ; targetClasses[k].textbook=nData[j][5] || "-" ;
+        targetClasses[k].etc=nData[j][6] || "-" ; } } } } } return { dateStr: targetDateStr, dayOfWeek: targetFullDay,
+        classes: targetClasses }; }
