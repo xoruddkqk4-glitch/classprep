@@ -27,9 +27,17 @@ Google Apps Script(GAS) 및 구글 스프레드시트 기반의 학급/요일별
   - Git 저장소 초기화 및 Remote URL (`https://github.com/xoruddkqk4-glitch/classprep`) 연동
 - **검증 결과**: `Code.gs` 백엔드 로직 검증 및 `index.html` 구문 및 스크립트 바인딩 확인 완료
 
-## [2026-09-09 20:23] 업데이트 이력 (Commit ID: 9f7cead)
+## [2026-09-09 20:23] 업데이트 이력 (Commit ID: dcb0262)
 - **수정 내용**:
   - `Code.gs`: Apps Script 내 HTML 파일명 대소문자(`index`/`Index`/`index.html`) 유연 처리 및 예외 핸들링 추가
   - `index.html`: 프론트엔드 HTML/CSS/JS 코드 정상 반영
 - **검증 결과**: Apps Script `createHtmlOutputFromFile` 파일 매칭 예외 해결 확인
+
+## [2026-09-09 20:56] 업데이트 이력 (Commit ID: a1d66b3)
+- **수정 내용**:
+  - `.agents`: `/git-commit` 수신 시에만 커밋/푸시를 실행하는 엄격 규칙 제정 및 범용화 적용
+  - `Code.gs`: `CacheService` 5분 캐싱, `DailyNotes` O(1) Map 매핑 및 8자리 숫자 날짜(`20260910`) 정규화 파싱 구현
+  - `index.html`: UI 개편 (단축 날짜 버튼, 카드 내 SMS 초간결 복사 기능, 학급별 고정 1x3 행 그리드 위치 고정, 텍스트 가운데 정렬)
+- **검증 결과**: 수동 검증 및 구문 체킹 완료, 정상 동작 확인
+
 

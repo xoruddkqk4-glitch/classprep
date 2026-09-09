@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>세문영 수업 준비물 안내</title>
+  <title>수업준비물 안내</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -44,7 +44,7 @@
 
     .container {
       width: 100%;
-      max-width: 680px;
+      max-width: 920px;
       margin: 0 auto;
     }
 
@@ -53,55 +53,48 @@
       margin-bottom: 24px;
     }
 
-    .title-badge {
-      display: inline-block;
-      padding: 6px 14px;
-      background: var(--primary-light);
-      color: var(--primary);
-      border-radius: 20px;
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-
     h1 {
       font-size: 26px;
       font-weight: 700;
       color: var(--text-main);
       letter-spacing: -0.5px;
+      text-align: center;
     }
 
     /* Date Controller */
     .date-card {
       background: var(--card-bg);
       border-radius: var(--radius);
-      padding: 16px;
+      padding: 16px 20px;
       box-shadow: var(--shadow);
       border: 1px solid var(--border-color);
-      margin-bottom: 20px;
+      margin-bottom: 24px;
       display: flex;
       flex-direction: column;
       gap: 12px;
+      align-items: center;
     }
 
     .date-controls {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center;
       gap: 8px;
+      flex-wrap: wrap;
+      width: 100%;
     }
 
     .btn {
       background: #ffffff;
       border: 1px solid var(--border-color);
       border-radius: 10px;
-      padding: 8px 14px;
+      padding: 8px 16px;
       font-size: 14px;
       font-weight: 600;
       color: var(--text-main);
       cursor: pointer;
       transition: all 0.2s ease;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 4px;
     }
@@ -111,33 +104,40 @@
       border-color: #cbd5e1;
     }
 
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-      border: none;
+    .btn-quick {
+      background: #f1f5f9;
+      color: #334155;
+      border-color: #e2e8f0;
     }
 
-    .btn-primary:hover {
-      background: var(--primary-hover);
+    .btn-quick:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+      border-color: #bfdbfe;
+    }
+
+    .btn-quick.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      font-weight: 700;
     }
 
     .date-picker-wrapper {
-      position: relative;
-      flex: 1;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .date-input {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       border: 1px solid var(--border-color);
       border-radius: 10px;
-      padding: 8px 12px;
+      padding: 7px 12px;
       text-align: center;
       color: var(--text-main);
       outline: none;
-      width: 100%;
-      max-width: 180px;
       cursor: pointer;
     }
 
@@ -148,25 +148,31 @@
 
     .day-info {
       text-align: center;
-      font-size: 15px;
-      font-weight: 600;
+      font-size: 16px;
+      font-weight: 700;
       color: var(--primary);
     }
 
-    /* Class Cards */
+    /* Class Cards Layout (Single Fixed Row 1x3 Grid) */
     .class-list {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: auto;
+      gap: 14px;
+      align-items: start;
     }
 
     .class-card {
+      grid-row: 1; /* 모든 카드는 반드시 동일한 1행에 배치 */
       background: var(--card-bg);
       border-radius: var(--radius);
-      padding: 20px;
+      padding: 14px 12px;
       box-shadow: var(--shadow);
       border: 1px solid var(--border-color);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      position: relative;
     }
 
     .class-card:hover {
@@ -178,87 +184,161 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 14px;
+      padding-bottom: 10px;
       border-bottom: 1px dashed var(--border-color);
-      margin-bottom: 16px;
+      margin-bottom: 12px;
+    }
+
+    .class-title-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
     .class-title {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 700;
       color: var(--text-main);
+    }
+
+    .header-actions {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 4px;
     }
 
     .period-badge {
       background: var(--primary-light);
       color: var(--primary);
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 8px;
+      padding: 2px 6px;
+      border-radius: 6px;
     }
 
+    .btn-copy {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      color: #475569;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 6px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .btn-copy:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+      border-color: #bfdbfe;
+    }
+
+    /* 텍스트 가운데 정렬 적용 */
     .prep-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
     }
 
     .prep-item {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 3px;
       background: #f8fafc;
-      padding: 10px 12px;
-      border-radius: 10px;
+      padding: 8px 6px;
+      border-radius: 8px;
       border: 1px solid #f1f5f9;
+      text-align: center;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .prep-item-full {
+      grid-column: 1 / -1;
     }
 
     .prep-label {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-sub);
       font-weight: 500;
       display: flex;
       align-items: center;
-      gap: 4px;
+      justify-content: center;
+      gap: 3px;
+      text-align: center;
     }
 
     .prep-val {
-      font-size: 15px;
+      font-size: 13px;
       font-weight: 700;
       display: flex;
       align-items: center;
+      justify-content: center;
+      text-align: center;
+      width: 100%;
     }
 
     .badge-check {
       color: var(--accent-check);
       background: var(--accent-check-bg);
-      padding: 2px 8px;
-      border-radius: 6px;
-      font-size: 13px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      text-align: center;
     }
 
     .badge-none {
       color: var(--accent-none);
       background: var(--accent-none-bg);
-      padding: 2px 8px;
-      border-radius: 6px;
-      font-size: 13px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      text-align: center;
     }
 
     .badge-text {
       color: #0284c7;
       background: #e0f2fe;
-      padding: 2px 8px;
-      border-radius: 6px;
-      font-size: 13px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      word-break: break-all;
+      text-align: center;
+    }
+
+    /* Toast Message */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #0f172a;
+      color: #ffffff;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
     }
 
     /* Loading & Empty State */
     .state-box {
+      grid-column: 1 / -1;
       background: var(--card-bg);
       border-radius: var(--radius);
       padding: 40px 20px;
@@ -269,13 +349,13 @@
     }
 
     .spinner {
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
       border: 3px solid var(--border-color);
       border-top-color: var(--primary);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
-      margin: 0 auto 16px;
+      margin: 0 auto 12px;
     }
 
     @keyframes spin {
@@ -283,7 +363,7 @@
     }
 
     .empty-icon {
-      font-size: 36px;
+      font-size: 32px;
       margin-bottom: 8px;
     }
   </style>
@@ -291,8 +371,7 @@
 <body>
   <div class="container">
     <header>
-      <span class="title-badge">스마트 알림장</span>
-      <h1>🎒 세문영 준비물 안내</h1>
+      <h1>🎒 수업준비물 안내</h1>
     </header>
 
     <div class="date-card">
@@ -301,8 +380,10 @@
         <div class="date-picker-wrapper">
           <input type="date" id="datePicker" class="date-input">
         </div>
-        <button class="btn" id="todayBtn">오늘</button>
         <button class="btn" id="nextDayBtn">다음 ▶</button>
+        <button class="btn btn-quick" id="todayBtn">오늘</button>
+        <button class="btn btn-quick" id="tomorrowBtn">내일</button>
+        <button class="btn btn-quick" id="afterTomorrowBtn">모레</button>
       </div>
       <div class="day-info" id="dayInfo">조회 중...</div>
     </div>
@@ -315,14 +396,18 @@
     </div>
   </div>
 
-  <script>
-    let currentDateStr = getTodayStr();
+  <div id="toast" class="toast">📋 텍스트가 복사되었습니다!</div>
 
-    function getTodayStr() {
-      const today = new Date();
-      const year = today.getFullYear();
-      const month = String(today.getMonth() + 1).padStart(2, '0');
-      const day = String(today.getDate()).padStart(2, '0');
+  <script>
+    let currentDateStr = getFormattedDate(0);
+    let classDataStore = [];
+
+    function getFormattedDate(offsetDays) {
+      const target = new Date();
+      target.setDate(target.getDate() + offsetDays);
+      const year = target.getFullYear();
+      const month = String(target.getMonth() + 1).padStart(2, '0');
+      const day = String(target.getDate()).padStart(2, '0');
       return `${year}-${month}-${day}`;
     }
 
@@ -333,20 +418,28 @@
       datePicker.addEventListener('change', (e) => {
         if (e.target.value) {
           currentDateStr = e.target.value;
+          updateQuickButtons();
           loadData(currentDateStr);
         }
       });
 
       document.getElementById('prevDayBtn').addEventListener('click', () => changeDate(-1));
       document.getElementById('nextDayBtn').addEventListener('click', () => changeDate(1));
-      document.getElementById('todayBtn').addEventListener('click', () => {
-        currentDateStr = getTodayStr();
-        datePicker.value = currentDateStr;
-        loadData(currentDateStr);
-      });
 
+      document.getElementById('todayBtn').addEventListener('click', () => setQuickDate(0));
+      document.getElementById('tomorrowBtn').addEventListener('click', () => setQuickDate(1));
+      document.getElementById('afterTomorrowBtn').addEventListener('click', () => setQuickDate(2));
+
+      updateQuickButtons();
       loadData(currentDateStr);
     });
+
+    function setQuickDate(offsetDays) {
+      currentDateStr = getFormattedDate(offsetDays);
+      document.getElementById('datePicker').value = currentDateStr;
+      updateQuickButtons();
+      loadData(currentDateStr);
+    }
 
     function changeDate(days) {
       const date = new Date(currentDateStr);
@@ -356,7 +449,18 @@
       const day = String(date.getDate()).padStart(2, '0');
       currentDateStr = `${year}-${month}-${day}`;
       document.getElementById('datePicker').value = currentDateStr;
+      updateQuickButtons();
       loadData(currentDateStr);
+    }
+
+    function updateQuickButtons() {
+      const todayStr = getFormattedDate(0);
+      const tomorrowStr = getFormattedDate(1);
+      const afterTomorrowStr = getFormattedDate(2);
+
+      document.getElementById('todayBtn').classList.toggle('active', currentDateStr === todayStr);
+      document.getElementById('tomorrowBtn').classList.toggle('active', currentDateStr === tomorrowStr);
+      document.getElementById('afterTomorrowBtn').classList.toggle('active', currentDateStr === afterTomorrowStr);
     }
 
     function loadData(dateStr) {
@@ -374,10 +478,11 @@
             dayOfWeek: getDayName(dateStr),
             classes: [
               { className: '세문영A', period: '1교시', portfolio: 'O', pen: 'O', dibot: '-', textbook: 'O', etc: '-' },
-              { className: '세문영D', period: '3교시', portfolio: '-', pen: 'O', dibot: 'O', textbook: 'O', etc: '유인물' }
+              { className: '세문영D', period: '3교시', portfolio: 'O', pen: 'O', dibot: '-', textbook: 'O', etc: '-' },
+              { className: '세문영E', period: '5교시', portfolio: '-', pen: '-', dibot: '-', textbook: '-', etc: '-' }
             ]
           });
-        }, 400);
+        }, 200);
       }
     }
 
@@ -408,22 +513,114 @@
       `;
     }
 
-    function renderBadge(val) {
+    function normalizeValue(val) {
+      if (val === null || val === undefined) return '-';
+      const str = String(val).trim();
+      if (str === '1' || str === '1.0' || str === 'O' || str === 'o' || str === 'true' || str === 'TRUE' || str === '⭕') {
+        return 'O';
+      }
+      if (str === '' || str === '0' || str === '0.0' || str === '-' || str === 'false' || str === 'FALSE') {
+        return '-';
+      }
+      return str;
+    }
+
+    function copyValueForText(val) {
+      const norm = normalizeValue(val);
+      return norm === '-' ? 'X' : norm;
+    }
+
+    function renderBadge(rawVal) {
+      const val = normalizeValue(rawVal);
       if (val === 'O') {
         return `<span class="badge-check">O (지참)</span>`;
-      } else if (val === '-' || !val) {
+      } else if (val === '-') {
         return `<span class="badge-none">- (없음)</span>`;
       } else {
         return `<span class="badge-text">${val}</span>`;
       }
     }
 
+    /**
+     * 학급별 순서 및 고정 그리드 컬럼 반환
+     * 세문영A -> 1 (가장 왼쪽)
+     * 세문영D -> 2 (가운데)
+     * 세문영E -> 3 (가장 오른쪽)
+     */
+    function getGridColumn(className, defaultIndex) {
+      if (!className) return (defaultIndex % 3) + 1;
+      const name = String(className).toUpperCase().trim();
+      if (name.includes('A')) return 1;
+      if (name.includes('D')) return 2;
+      if (name.includes('E')) return 3;
+      return (defaultIndex % 3) + 1;
+    }
+
+    /**
+     * 문자 전송용 초간결 복사 텍스트 포맷터
+     */
+    function copyClassText(index) {
+      const c = classDataStore[index];
+      if (!c) return;
+
+      const dayOfWeek = getDayName(currentDateStr);
+      const portfolio = copyValueForText(c.portfolio);
+      const pen = copyValueForText(c.pen);
+      const dibot = copyValueForText(c.dibot);
+      const textbook = copyValueForText(c.textbook);
+      const etcRaw = normalizeValue(c.etc);
+
+      let text = `[${c.className}] ${currentDateStr}(${dayOfWeek}) ${c.period} || 1포트폴리오: ${portfolio}, 2필기도구: ${pen}, 3디벗: ${dibot}, 4교과서: ${textbook}`;
+
+      if (etcRaw !== '-' && etcRaw !== '') {
+        text += `, 5기타: ${etcRaw}`;
+      }
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast(`📋 ${c.className} 문자용 텍스트가 복사되었습니다!`);
+        }).catch(() => fallbackCopy(text, c.className));
+      } else {
+        fallbackCopy(text, c.className);
+      }
+    }
+
+    function fallbackCopy(text, className) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        showToast(`📋 ${className} 문자용 텍스트가 복사되었습니다!`);
+      } catch (err) {
+        alert(text);
+      }
+      document.body.removeChild(textArea);
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
     function renderData(data) {
       const dayInfo = document.getElementById('dayInfo');
       dayInfo.textContent = `${data.dateStr} (${data.dayOfWeek})`;
 
+      classDataStore = data.classes || [];
+
+      // 학급 정렬: 세문영A (1) -> 세문영D (2) -> 세문영E (3) 순서로 배열 정렬
+      classDataStore.sort((a, b) => {
+        return getGridColumn(a.className, 0) - getGridColumn(b.className, 0);
+      });
+
       const container = document.getElementById('contentArea');
-      if (!data.classes || data.classes.length === 0) {
+      if (!classDataStore || classDataStore.length === 0) {
         container.innerHTML = `
           <div class="state-box">
             <div class="empty-icon">📅</div>
@@ -434,14 +631,18 @@
       }
 
       let html = '<div class="class-list">';
-      data.classes.forEach(c => {
+      classDataStore.forEach((c, idx) => {
+        const gridCol = getGridColumn(c.className, idx);
         html += `
-          <div class="class-card">
+          <div class="class-card" style="grid-column: ${gridCol}; grid-row: 1;">
             <div class="class-header">
-              <div class="class-title">
-                📚 ${c.className}
+              <div class="class-title-group">
+                <span class="class-title">📚 ${c.className}</span>
               </div>
-              <span class="period-badge">${c.period}</span>
+              <div class="header-actions">
+                <span class="period-badge">${c.period}</span>
+                <button class="btn-copy" onclick="copyClassText(${idx})" title="문자 전송용 초간결 텍스트 복사">📋 복사</button>
+              </div>
             </div>
             <div class="prep-grid">
               <div class="prep-item">
@@ -460,7 +661,7 @@
                 <span class="prep-label">📖 교과서</span>
                 <div class="prep-val">${renderBadge(c.textbook)}</div>
               </div>
-              <div class="prep-item">
+              <div class="prep-item prep-item-full">
                 <span class="prep-label">📌 기타 준비물</span>
                 <div class="prep-val">${renderBadge(c.etc)}</div>
               </div>
