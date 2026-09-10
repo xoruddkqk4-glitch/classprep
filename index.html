@@ -169,10 +169,21 @@
       padding: 14px 12px;
       box-shadow: var(--shadow);
       border: 1px solid var(--border-color);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
       display: flex;
       flex-direction: column;
       position: relative;
+    }
+
+    /* 기본 준비물 상태(포트폴리오 O, 필기도구 O, 디벗 -, 교과서 -, 기타 -)와 다를 때 파스텔 빨간색 배경 */
+    .class-card.alert-bg {
+      background-color: #fee2e2;
+      border-color: #fca5a5;
+    }
+
+    .class-card.alert-bg .prep-item {
+      background: rgba(255, 255, 255, 0.7);
+      border-color: #fecdd3;
     }
 
     .class-card:hover {
@@ -384,6 +395,7 @@
         <button class="btn btn-quick" id="todayBtn">오늘</button>
         <button class="btn btn-quick" id="tomorrowBtn">내일</button>
         <button class="btn btn-quick" id="afterTomorrowBtn">모레</button>
+        <button class="btn btn-quick" id="refreshBtn" title="시트 최신 데이터 즉시 반영">🔄 새로고침</button>
       </div>
       <div class="day-info" id="dayInfo">조회 중...</div>
     </div>
@@ -401,6 +413,7 @@
   <script>
     let currentDateStr = getFormattedDate(0);
     let classDataStore = [];
+    const clientCache = {}; // 클라이언트 메모리 캐시 (날짜 전환 0초 지연)
 
     function getFormattedDate(offsetDays) {
       const target = new Date();
@@ -408,6 +421,16 @@
       const year = target.getFullYear();
       const month = String(target.getMonth() + 1).padStart(2, '0');
       const day = String(target.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function getOffsetDateStr(baseDateStr, offsetDays) {
+      const parts = baseDateStr.split('-');
+      const d = new Date(parts[0], parts[1] - 1, parts[2]);
+      d.setDate(d.getDate() + offsetDays);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
       return `${year}-${month}-${day}`;
     }
 
@@ -429,6 +452,10 @@
       document.getElementById('todayBtn').addEventListener('click', () => setQuickDate(0));
       document.getElementById('tomorrowBtn').addEventListener('click', () => setQuickDate(1));
       document.getElementById('afterTomorrowBtn').addEventListener('click', () => setQuickDate(2));
+      document.getElementById('refreshBtn').addEventListener('click', () => {
+        loadData(currentDateStr, true);
+        showToast('🔄 시트에서 최신 정보를 다시 불러왔습니다!');
+      });
 
       updateQuickButtons();
       loadData(currentDateStr);
@@ -463,27 +490,61 @@
       document.getElementById('afterTomorrowBtn').classList.toggle('active', currentDateStr === afterTomorrowStr);
     }
 
-    function loadData(dateStr) {
+    function loadData(dateStr, forceRefresh = false) {
+      // 강제 새로고침이 아니고 프론트엔드 메모리 캐시에 데이터가 있으면 0ms 즉시 렌더링
+      if (!forceRefresh && clientCache[dateStr]) {
+        renderData(clientCache[dateStr]);
+        prefetchNearbyDates(dateStr);
+        return;
+      }
+
       showLoading();
       if (typeof google !== 'undefined' && google.script && google.script.run) {
         google.script.run
-          .withSuccessHandler(renderData)
+          .withSuccessHandler((data) => {
+            clientCache[dateStr] = data;
+            renderData(data);
+            prefetchNearbyDates(dateStr);
+          })
           .withFailureHandler(handleError)
-          .getClassData(dateStr);
+          .getClassData(dateStr, forceRefresh);
       } else {
         // Dev / Fallback Preview
         setTimeout(() => {
-          renderData({
+          const devData = {
             dateStr: dateStr,
             dayOfWeek: getDayName(dateStr),
             classes: [
-              { className: '세문영A', period: '1교시', portfolio: 'O', pen: 'O', dibot: '-', textbook: 'O', etc: '-' },
+              { className: '세문영A', period: '1교시', portfolio: 'O', pen: 'O', dibot: '-', textbook: '-', etc: '-' },
               { className: '세문영D', period: '3교시', portfolio: 'O', pen: 'O', dibot: '-', textbook: 'O', etc: '-' },
               { className: '세문영E', period: '5교시', portfolio: '-', pen: '-', dibot: '-', textbook: '-', etc: '-' }
             ]
-          });
+          };
+          clientCache[dateStr] = devData;
+          renderData(devData);
         }, 200);
       }
+    }
+
+    /**
+     * 주변 날짜 (내일, 모레, 어제) 백그라운드 프리패치 (사전 로딩)
+     */
+    function prefetchNearbyDates(baseDateStr) {
+      if (typeof google === 'undefined' || !google.script || !google.script.run) return;
+
+      const offsets = [1, 2, -1];
+      offsets.forEach(offset => {
+        const targetStr = getOffsetDateStr(baseDateStr, offset);
+        if (!clientCache[targetStr]) {
+          google.script.run
+            .withSuccessHandler((data) => {
+              if (data && data.dateStr) {
+                clientCache[data.dateStr] = data;
+              }
+            })
+            .getClassData(targetStr, false);
+        }
+      });
     }
 
     function getDayName(dateStr) {
@@ -523,6 +584,24 @@
         return '-';
       }
       return str;
+    }
+
+    /**
+     * 준비물이 기본 상태(포트폴리오 O, 필기도구 O, 디벗 -, 교과서 -, 기타 -)인지 여부 판단
+     */
+    function isDefaultPrep(c) {
+      if (!c) return true;
+      const portfolio = normalizeValue(c.portfolio);
+      const pen = normalizeValue(c.pen);
+      const dibot = normalizeValue(c.dibot);
+      const textbook = normalizeValue(c.textbook);
+      const etc = normalizeValue(c.etc);
+
+      return portfolio === 'O' &&
+             pen === 'O' &&
+             dibot === '-' &&
+             textbook === '-' &&
+             (etc === '-' || etc === '');
     }
 
     function copyValueForText(val) {
@@ -633,8 +712,10 @@
       let html = '<div class="class-list">';
       classDataStore.forEach((c, idx) => {
         const gridCol = getGridColumn(c.className, idx);
+        const isDefault = isDefaultPrep(c);
+        const alertClass = isDefault ? '' : ' alert-bg';
         html += `
-          <div class="class-card" style="grid-column: ${gridCol}; grid-row: 1;">
+          <div class="class-card${alertClass}" style="grid-column: ${gridCol}; grid-row: 1;">
             <div class="class-header">
               <div class="class-title-group">
                 <span class="class-title">📚 ${c.className}</span>
